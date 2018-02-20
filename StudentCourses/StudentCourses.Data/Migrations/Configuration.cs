@@ -23,8 +23,41 @@ namespace StudentCourses.Data.Migrations
 			//  This method will be called after migrating to the latest version.
 
 			SeedAdmin(context);
+			SeedData(context);
 
 			base.Seed(context);
+		}
+
+		private void SeedData(StudentCoursesDbContext context)
+		{
+			if (!context.Courses.Any())
+			{
+				for (int i = 0; i < 5; i++)
+				{
+					var course = new Course()
+					{
+						Title = String.Format("Course {0}", i + 1),
+						Description = String.Format("Test course {0}", i + 1),
+						CreatedOn = DateTime.Now
+					};
+
+					context.Courses.Add(course);
+				}
+			}
+
+			if (!context.StudentCourses.Any())
+			{
+				var courses = context.Courses.Where(x => x.Title.Contains("1")).ToList();
+				var user = context.Users.First();
+				foreach (Course course in courses)
+				{
+					context.StudentCourses.Add(new StudentCourse()
+					{
+						Course = course,
+						User = user
+					});
+				}
+			}
 		}
 
 		private void SeedAdmin(StudentCoursesDbContext context)
