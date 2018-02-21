@@ -15,6 +15,7 @@ namespace StudentCourses.Web.App_Start
 	using Ninject.Extensions.Conventions;
 	using StudentCourses.Data;
 	using StudentCourses.Data.Repository;
+	using StudentCourses.Services.Contracts;
 
 	public static class NinjectConig 
     {
@@ -68,7 +69,7 @@ namespace StudentCourses.Web.App_Start
         {
 			kernel.Bind(x =>
 			{
-				x.FromThisAssembly()
+				x.FromAssemblyContaining<IService>()
 				.SelectAllClasses()
 				.BindDefaultInterface();
 			});
