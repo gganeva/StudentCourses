@@ -3,8 +3,8 @@ using StudentCourses.Models;
 
 namespace StudentCourses.Services.Contracts
 {
-	public interface ICoursesServices
+	public interface IStudentCoursesServices
 	{
-		IQueryable<Course> GetAll();
+		IQueryable<StudentCourse> GetAll();
 	}
 }

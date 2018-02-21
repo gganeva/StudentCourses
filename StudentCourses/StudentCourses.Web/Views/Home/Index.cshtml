@@ -7,24 +7,61 @@
 
 <h1>@ViewBag.Title</h1>
 
-<hr />
-<h2>All courses</h2>
-<table border=1>
-	<thead>
-		<tr>
-			<td>Course</td>
-			<td>Description</td>
-		</tr>
-	</thead>
-	<tbody>
-		@{
-			foreach (var course in Model.AllCourses)
-			{
+<div class="row">
+	<div class="col-md-4">
+		<h3>Registered Courses</h3>
+		<table cellpadding="5">
+			<thead>
+				<tr>
+					<td width="150">Course</td>
+					<td width="200">Description</td>
+					<td width="150"></td>
+				</tr>
+			</thead>
+			<tbody>
+				@{
+				foreach (var course in Model.RegisteredCourses)
+				{
 				<tr>
 					<td>@course.Title</td>
 					<td>@course.Description</td>
+					<td>
+						<a href="">Edit</a>
+						<a href="">Delete</a>
+					</td>
 				</tr>
 			}
-		}
-	</tbody>
-</table>
+				}
+			</tbody>
+		</table>
+
+	</div>
+	<div class="col-md-4">
+		<h3>All Courses</h3>
+		<table cellpadding="5">
+			<thead>
+				<tr>
+					<td width="150">Course</td>
+					<td width="200">Description</td>
+					<td width="200"></td>
+				</tr>
+			</thead>
+			<tbody>
+				@{
+				foreach (var course in Model.AllCourses)
+				{
+					<tr>
+						<td>@course.Title</td>
+						<td>@course.Description</td>
+						<td>
+							<a href="">Add</a>
+							<a href="">Edit</a>
+							<a href="">Delete</a>
+						</td>
+					</tr>
+			}
+				}
+			</tbody>
+		</table>
+	</div>
+</div>

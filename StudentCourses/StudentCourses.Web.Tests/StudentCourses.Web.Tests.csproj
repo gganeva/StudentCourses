@@ -89,6 +89,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MockServices\MockCoursesServices.cs" />
+    <Compile Include="MockServices\MockStudentCoursesServices.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Controllers\HomeControllerTest.cs" />
   </ItemGroup>
@@ -99,6 +101,18 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\StudentCourses.Data\StudentCourses.Data.csproj">
+      <Project>{e933f9c7-b5fa-46a4-b571-f9f00d79d5bb}</Project>
+      <Name>StudentCourses.Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\StudentCourses.Models\StudentCourses.Models.csproj">
+      <Project>{a865e2b3-3432-4e5f-85ff-2289b9f4ebf0}</Project>
+      <Name>StudentCourses.Models</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\StudentCourses.Services\StudentCourses.Services.csproj">
+      <Project>{3c47d2e8-9f05-4e69-b7df-6de074972818}</Project>
+      <Name>StudentCourses.Services</Name>
+    </ProjectReference>
     <ProjectReference Include="..\StudentCourses.Web\StudentCourses.Web.csproj">
       <Project>{EF1DE403-5856-4FAC-AEF4-E8DBCF2B6295}</Project>
       <Name>StudentCourses.Web</Name>

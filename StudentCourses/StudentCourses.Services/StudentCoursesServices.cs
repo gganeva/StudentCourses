@@ -5,16 +5,16 @@ using System.Linq;
 
 namespace StudentCourses.Services
 {
-	public class CoursesServices : ICoursesServices
+	public class StudentCoursesServices : IStudentCoursesServices
 	{
-		private readonly IDbContextWrapper<Course> _dbContextWrapper;
+		private readonly IDbContextWrapper<StudentCourse> _dbContextWrapper;
 
-		public CoursesServices(IDbContextWrapper<Course> dbContextWrapper)
+		public StudentCoursesServices(IDbContextWrapper<StudentCourse> dbContextWrapper)
 		{
 			_dbContextWrapper = dbContextWrapper;
 		}
 
-		public IQueryable<Course> GetAll()
+		public IQueryable<StudentCourse> GetAll()
 		{
 			return _dbContextWrapper.All;
 		}
