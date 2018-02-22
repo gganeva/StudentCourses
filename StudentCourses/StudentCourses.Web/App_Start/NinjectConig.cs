@@ -16,6 +16,7 @@ namespace StudentCourses.Web.App_Start
 	using StudentCourses.Data;
 	using StudentCourses.Data.Repository;
 	using StudentCourses.Services.Contracts;
+	using AutoMapper;
 
 	public static class NinjectConig 
     {
@@ -76,6 +77,7 @@ namespace StudentCourses.Web.App_Start
 
 			kernel.Bind(typeof(DbContext)).To(typeof(StudentCoursesDbContext)).InRequestScope();
 			kernel.Bind(typeof(IDbContextWrapper<>)).To(typeof(DbContextWrapper<>));
+			kernel.Bind<IMapper>().ToMethod(ctx => AutoMapperConfig.MapperInstance);
         }        
     }
 }

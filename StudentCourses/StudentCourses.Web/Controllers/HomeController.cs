@@ -1,4 +1,5 @@
-﻿using StudentCourses.Services.Contracts;
+﻿using AutoMapper;
+using StudentCourses.Services.Contracts;
 using StudentCourses.Web.Models.Home;
 using System.Linq;
 using System.Web.Mvc;
@@ -9,14 +10,16 @@ namespace StudentCourses.Web.Controllers
 	{
 		private readonly ICoursesServices _coursesServices;
 		private readonly IStudentCoursesServices _studentCoursesServices;
-
+		private readonly IMapper _mapper;
 
 		public HomeController(
 			ICoursesServices coursesServices,
-			IStudentCoursesServices studentCourseServices)
+			IStudentCoursesServices studentCourseServices,
+			IMapper mapper)
 		{
 			_coursesServices = coursesServices;
 			_studentCoursesServices = studentCourseServices;
+			_mapper = mapper;
 		}
 
 		public ActionResult Index()
@@ -24,20 +27,14 @@ namespace StudentCourses.Web.Controllers
 			if (Request.IsAuthenticated)
 			{
 				var courses = _coursesServices.GetAll()
-					.Select(x => new CourseViewModel()
-					{
-						Title = x.Title,
-						Description = x.Description
-					})
+					.ToList()
+					.Select(x => _mapper.Map<CourseViewModel>(x))
 					.ToList();
 
 				var studentCourses = _studentCoursesServices.GetAll()
 					.Where(x => x.User.UserName == System.Web.HttpContext.Current.User.Identity.Name)
-					.Select(x => new CourseViewModel()
-					{
-						Title = x.Course.Title,
-						Description = x.Course.Description
-					})
+					.ToList()
+					.Select(x => _mapper.Map<CourseViewModel>(x.Course))
 					.ToList();
 
 				var viewModel = new HomeViewModel()
