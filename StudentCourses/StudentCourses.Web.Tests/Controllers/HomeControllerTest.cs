@@ -23,7 +23,7 @@ namespace StudentCourses.Web.Tests.Controllers
 		public void Index()
 		{
 			// Arrange
-			HomeController controller = new HomeController(_coursesServices, _studentCoursesServices);
+			HomeController controller = new HomeController(_coursesServices, _studentCoursesServices, null);
 
 			// Act
 			ViewResult result = controller.Index() as ViewResult;
