@@ -73,6 +73,9 @@ namespace StudentCourses.Data.Migrations
 				var userManager = new UserManager<User>(userStore);
 				var user = new User()
 				{
+					FirstName = "First",
+					LastName = "Last",
+					FacultyNumber = "FacultyNumber",
 					UserName = AdministratorUserName,
 					Email = AdministratorUserName,
 					EmailConfirmed = true,

@@ -61,6 +61,10 @@
     <Compile Include="Migrations\201802202023119_Added Student Courses.Designer.cs">
       <DependentUpon>201802202023119_Added Student Courses.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201802230919211_Added first name, last name and faculty number to User.cs" />
+    <Compile Include="Migrations\201802230919211_Added first name, last name and faculty number to User.Designer.cs">
+      <DependentUpon>201802230919211_Added first name, last name and faculty number to User.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repository\DbContextWrapper.cs" />
@@ -83,6 +87,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201802202023119_Added Student Courses.resx">
       <DependentUpon>201802202023119_Added Student Courses.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201802230919211_Added first name, last name and faculty number to User.resx">
+      <DependentUpon>201802230919211_Added first name, last name and faculty number to User.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
