@@ -150,7 +150,7 @@ namespace StudentCourses.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new User
+                var user = new Student
 				{
 					FirstName = model.FirstName,
 					LastName = model.LastName,
@@ -373,7 +373,7 @@ namespace StudentCourses.Web.Controllers
                 {
                     return View("ExternalLoginFailure");
                 }
-                var user = new User { UserName = model.Email, Email = model.Email };
+                var user = new Student { UserName = model.Email, Email = model.Email };
                 var result = await UserManager.CreateAsync(user);
                 if (result.Succeeded)
                 {

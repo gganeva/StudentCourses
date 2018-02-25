@@ -30,7 +30,7 @@ namespace StudentCourses.Data.Migrations
 
 		private void SeedData(StudentCoursesDbContext context)
 		{
-			if (!context.Courses.Any())
+			if (!context.Set<Course>().Any())
 			{
 				for (int i = 0; i < 5; i++)
 				{
@@ -41,20 +41,20 @@ namespace StudentCourses.Data.Migrations
 						CreatedOn = DateTime.Now
 					};
 
-					context.Courses.Add(course);
+					context.Set<Course>().Add(course);
 				}
 			}
 
-			if (!context.StudentCourses.Any())
+			if (!context.Set<StudentCourse>().Any())
 			{
-				var courses = context.Courses.Where(x => x.Title.Contains("1")).ToList();
+				var courses = context.Set<Course>().Where(x => x.Title.Contains("1")).ToList();
 				var user = context.Users.First();
 				foreach (Course course in courses)
 				{
-					context.StudentCourses.Add(new StudentCourse()
+					context.Set<StudentCourse>().Add(new StudentCourse()
 					{
 						Course = course,
-						User = user
+						Student = user
 					});
 				}
 			}
@@ -69,9 +69,9 @@ namespace StudentCourses.Data.Migrations
 				var role = new IdentityRole() { Name = "Admin" };
 				roleManager.Create(role);
 
-				var userStore = new UserStore<User>(context);
-				var userManager = new UserManager<User>(userStore);
-				var user = new User()
+				var userStore = new UserStore<Student>(context);
+				var userManager = new UserManager<Student>(userStore);
+				var user = new Student()
 				{
 					FirstName = "First",
 					LastName = "Last",

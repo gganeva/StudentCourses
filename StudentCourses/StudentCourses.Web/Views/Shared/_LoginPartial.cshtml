@@ -11,10 +11,10 @@
 				@{
 					var claimsIdentity = User.Identity as ClaimsIdentity;
 					var firstNameClaim = claimsIdentity != null
-						? claimsIdentity.Claims.SingleOrDefault(x => x.Type == MODELS.User.FirstNameClaimType)
+						? claimsIdentity.Claims.SingleOrDefault(x => x.Type == MODELS.Student.FirstNameClaimType)
 						: null;
 					var lastNameClaim = claimsIdentity != null
-						? claimsIdentity.Claims.SingleOrDefault(x => x.Type == MODELS.User.LastNameClaimType)
+						? claimsIdentity.Claims.SingleOrDefault(x => x.Type == MODELS.Student.LastNameClaimType)
 						: null;
 					var nameToDisplay = (firstNameClaim == null || lastNameClaim == null) ?
 						User.Identity.Name : String.Format("{0} {1}", firstNameClaim.Value, lastNameClaim.Value);

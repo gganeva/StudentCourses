@@ -26,8 +26,8 @@
 					<td>@course.Title</td>
 					<td>@course.Description</td>
 					<td>
-						<a href="">Edit</a>
-						<a href="">Delete</a>
+						<a href='@Url.Action("EditCourse", "Home", new { id = course.Id })'>Edit</a>
+						<a href="@Url.Action("RemoveCourse", "Home", new { id = course.Id })">Unregister</a>
 					</td>
 				</tr>
 			}
@@ -54,9 +54,8 @@
 						<td>@course.Title</td>
 						<td>@course.Description</td>
 						<td>
-							<a href="">Add</a>
-							<a href="">Edit</a>
-							<a href="">Delete</a>
+							<a href='@Url.Action("RegisterCourse", "Home", new { id = course.Id })'>Register</a>
+							<a href='@Url.Action("EditCourse", "Home", new { id = course.Id })'>Edit</a>
 						</td>
 					</tr>
 			}

@@ -14,7 +14,6 @@ namespace StudentCourses.Web.App_Start
 	using Ninject.Web.Common.WebHost;
 	using Ninject.Extensions.Conventions;
 	using StudentCourses.Data;
-	using StudentCourses.Data.Repository;
 	using StudentCourses.Services.Contracts;
 	using AutoMapper;
 
@@ -76,7 +75,8 @@ namespace StudentCourses.Web.App_Start
 			});
 
 			kernel.Bind(typeof(DbContext)).To(typeof(StudentCoursesDbContext)).InRequestScope();
-			kernel.Bind(typeof(IDbContextWrapper<>)).To(typeof(DbContextWrapper<>));
+			//kernel.Bind(typeof(IGenericRepository<>)).To(typeof(GenericRepository<>));
+			kernel.Bind<IUnitOfWork>().To<UnitOfWork>();
 			kernel.Bind<IMapper>().ToMethod(ctx => AutoMapperConfig.MapperInstance);
         }        
     }

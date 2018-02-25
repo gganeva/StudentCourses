@@ -1,0 +1,14 @@
+﻿@using StudentCourses.Web.Models.Home
+@model CourseViewModel
+
+@{
+	ViewBag.Title = "Edit Course";
+}
+
+<h1>@ViewBag.Title</h1>
+
+@using (Html.BeginForm("UpdateCourse", "Home", FormMethod.Post))
+{
+	@Html.EditorForModel();
+	<input type="submit" value="Submit" />
+}

@@ -14,16 +14,11 @@ namespace StudentCourses.Web.Tests.Controllers
 	[TestClass]
 	public class HomeControllerTest
 	{
-		private readonly ICoursesServices _coursesServices = 
-			new MockCoursesServices();
-		private readonly IStudentCoursesServices _studentCoursesServices = 
-			new MockStudentCoursesServices();
-
 		[TestMethod]
 		public void Index()
 		{
 			// Arrange
-			HomeController controller = new HomeController(_coursesServices, _studentCoursesServices, null);
+			HomeController controller = new HomeController(null, null);
 
 			// Act
 			ViewResult result = controller.Index() as ViewResult;

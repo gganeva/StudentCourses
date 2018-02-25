@@ -15,5 +15,15 @@ namespace StudentCourses.Web.Tests.MockServices
 				// TODO 
 			}).AsQueryable();
 		}
+
+		public Course GetCourse(Guid id)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void Update(Course course)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

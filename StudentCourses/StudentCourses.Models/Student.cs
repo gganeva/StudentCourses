@@ -1,16 +1,20 @@
-﻿using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.EntityFramework;
-using StudentCourses.Models.Contracts;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace StudentCourses.Models
 {
-	// You can add profile data for the user by adding more properties to your ApplicationUser class, please visit https://go.microsoft.com/fwlink/?LinkID=317594 to learn more.
-	public class User : IdentityUser, IDeletable, IAuditable
+	/// <summary>
+	/// Represent a student in the system.
+	/// </summary>
+	/// <remarks>Since <see cref="Student"/> already inherits a class,
+	/// <see cref="IDeletable"/> and <see cref="IAuditable"/> are implemented 
+	/// again instead of inheriting from <see cref="DataModelBase"/>.</remarks>
+	public class Student : IdentityUser, IDeletable, IAuditable
 	{
 		#region Constants
 
@@ -27,7 +31,7 @@ namespace StudentCourses.Models
 
 		#region Constructor
 
-		public User()
+		public Student()
 		{
 			_courses = new HashSet<Course>();
 		}
@@ -55,7 +59,7 @@ namespace StudentCourses.Models
 
 		#region Public Members
 
-		public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<User> manager)
+		public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<Student> manager)
 		{
 			// Note the authenticationType must match the one defined in CookieAuthenticationOptions.AuthenticationType
 			var userIdentity = await manager.CreateIdentityAsync(this, DefaultAuthenticationTypes.ApplicationCookie);
@@ -69,17 +73,10 @@ namespace StudentCourses.Models
 			return userIdentity;
 		}
 
-		public virtual ICollection<Course> Courses
+		public virtual ICollection<Course> Courses 
 		{
-			get
-			{
-				return _courses;
-			}
-
-			set
-			{
-				_courses = value;
-			}
+			get { return _courses; }
+			set {_courses = value; }
 		}
 		
 		[Required]

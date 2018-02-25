@@ -1,23 +1,34 @@
-﻿using Microsoft.AspNet.Identity.EntityFramework;
+﻿using System.Data.Entity;
+using Microsoft.AspNet.Identity.EntityFramework;
+
 using StudentCourses.Models;
-using System.Data.Entity;
 
 namespace StudentCourses.Data
 {
-	public class StudentCoursesDbContext : IdentityDbContext<User>
+	public class StudentCoursesDbContext : IdentityDbContext<Student>
 	{
 		public StudentCoursesDbContext()
 			: base("SCDB", throwIfV1Schema: false)
 		{
 		}
 
-		public IDbSet<Course> Courses { get; set; }
-		public IDbSet<StudentCourse> StudentCourses { get; set; }
+		public new IDbSet<TEntity> Set<TEntity>() where TEntity : class, IDeletable
+		{
+			return base.Set<TEntity>();
+		}
+
+		protected override void OnModelCreating(DbModelBuilder modelBuilder)
+		{
+			base.OnModelCreating(modelBuilder);
+
+			modelBuilder.Entity<Student>().ToTable("Students");
+			modelBuilder.Entity<StudentCourse>().ToTable("StudentCourses");
+
+		}
 
 		public static StudentCoursesDbContext Create()
 		{
 			return new StudentCoursesDbContext();
 		}
 	}
-
 }

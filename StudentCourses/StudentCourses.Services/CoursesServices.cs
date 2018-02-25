@@ -1,22 +1,34 @@
-﻿using StudentCourses.Data.Repository;
+﻿using System;
+using System.Linq;
+
+using StudentCourses.Data;
 using StudentCourses.Models;
 using StudentCourses.Services.Contracts;
-using System.Linq;
 
 namespace StudentCourses.Services
 {
 	public class CoursesServices : ICoursesServices
 	{
-		private readonly IDbContextWrapper<Course> _dbContextWrapper;
+		private readonly IGenericRepository<Course> _dbContextWrapper;
 
-		public CoursesServices(IDbContextWrapper<Course> dbContextWrapper)
+		public CoursesServices(IGenericRepository<Course> dbContextWrapper)
 		{
 			_dbContextWrapper = dbContextWrapper;
 		}
 
 		public IQueryable<Course> GetAll()
 		{
-			return _dbContextWrapper.All;
+			return _dbContextWrapper.AllNonDeleted;
+		}
+
+		public Course GetCourse(Guid id)
+		{
+			return _dbContextWrapper.GetById(id);
+		}
+
+		public void Update(Course course)
+		{
+			_dbContextWrapper.Update(course);
 		}
 	}
 }

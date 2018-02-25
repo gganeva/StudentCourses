@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace StudentCourses.Models.Contracts
+namespace StudentCourses.Models
 {
 	public interface IDeletable
 	{ 
