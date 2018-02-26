@@ -23,7 +23,7 @@
 								 new { id = course.Id },
 								 new AjaxOptions()
 								 {
-									 OnBegin = "return DisplayConfirmationPopup('" + course.Title + "')",
+									 Confirm = "Are you sure you wish to unregister from course \"" + course.Title + "\"?",
 									 InsertionMode = InsertionMode.Replace,
 									 UpdateTargetId = "registeredCourses"
 								 })
@@ -33,9 +33,3 @@
 		}
 	</tbody>
 </table>
-
-<script>
-	function DisplayConfirmationPopup(courseTitle) {
-		return confirm('Are you sure you wish to unregister from course "' + courseTitle + '"? ')
-	}
-</script>

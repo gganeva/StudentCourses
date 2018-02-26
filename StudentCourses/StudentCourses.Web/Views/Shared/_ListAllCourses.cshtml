@@ -1,6 +1,6 @@
 ﻿@using StudentCourses.Web.Models.Home
 @model ICollection<CourseViewModel>
-
+	
 <h3>All Courses</h3>
 <table cellpadding="5">
 	<thead>
@@ -22,7 +22,8 @@
 								 new { id = course.Id },
 								 new AjaxOptions()
 								 {
-									 OnBegin = "return DisplayConfirmationPopup('" + course.Title + "')",
+									 Confirm = "Are you sure you want to register for \"" + course.Title + "\"?",
+									 OnFailure = "DisplayErrorPopup",
 									 InsertionMode = InsertionMode.Replace,
 									 UpdateTargetId = "registeredCourses"
 								 })
@@ -35,7 +36,9 @@
 </table>
 
 <script>
-	function DisplayConfirmationPopup(courseTitle) {
-		return confirm('Are you sure you wish to register for course "' + courseTitle + '"? ')
+	function DisplayErrorPopup(xhr, exception) {
+		if (xhr.status === 409) {
+			alert('Course is alreayd registered!');
+		}
 	}
 </script>

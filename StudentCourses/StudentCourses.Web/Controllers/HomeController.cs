@@ -114,8 +114,8 @@ namespace StudentCourses.Web.Controllers
 
 			if (studentCourse != null && !studentCourse.IsDeleted)
 			{
-				// TODO :
-				return new ContentResult() { Content = "User already has the course" };
+				return new HttpStatusCodeResult(HttpStatusCode.Conflict,
+					"Course already registered");
 			}
 
 			if (studentCourse != null)
