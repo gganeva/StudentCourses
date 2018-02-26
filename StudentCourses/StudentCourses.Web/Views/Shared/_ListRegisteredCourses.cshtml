@@ -1,0 +1,41 @@
+﻿@using StudentCourses.Web.Models.Home
+@model ICollection<CourseViewModel>
+
+<h3>Registered Courses</h3>
+<table cellpadding="5">
+	<thead>
+		<tr>
+			<td width="150">Course</td>
+			<td width="200">Description</td>
+			<td width="150"></td>
+		</tr>
+	</thead>
+	<tbody>
+		@{
+			foreach (var course in Model)
+			{
+				<tr>
+					<td>@course.Title</td>
+					<td>@course.Description</td>
+					<td>
+						@Html.ActionLink("Edit", "EditCourse", new { id = course.Id })
+						@Ajax.ActionLink("Unregister", "RemoveCourse",
+								 new { id = course.Id },
+								 new AjaxOptions()
+								 {
+									 OnBegin = "return DisplayConfirmationPopup('" + course.Title + "')",
+									 InsertionMode = InsertionMode.Replace,
+									 UpdateTargetId = "registeredCourses"
+								 })
+					</td>
+				</tr>
+			}
+		}
+	</tbody>
+</table>
+
+<script>
+	function DisplayConfirmationPopup(courseTitle) {
+		return confirm('Are you sure you wish to unregister from course "' + courseTitle + '"? ')
+	}
+</script>

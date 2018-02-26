@@ -1,21 +1,30 @@
-﻿using AutoMapper;
-using StudentCourses.Data;
-using StudentCourses.Models;
-using StudentCourses.Web.Models.Home;
-using System;
+﻿using System;
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
+
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
+
+using StudentCourses.Data;
+using StudentCourses.Models;
+using StudentCourses.Web.Models.Home;
 
 namespace StudentCourses.Web.Controllers
 {
 	public class HomeController : Controller
 	{
+		#region Fields
+
 		private readonly IGenericRepository<StudentCourse> _studentCourses;
 		private readonly IGenericRepository<Course> _courses;
 		private readonly IGenericRepository<Student> _students;
 		private readonly IUnitOfWork _unitOfWork;
 		private readonly IMapper _mapper;
+
+		#endregion // Fields
+
+		#region Constructor
 
 		public HomeController(IUnitOfWork unitOfWork, IMapper mapper)
 		{
@@ -26,19 +35,22 @@ namespace StudentCourses.Web.Controllers
 			_mapper = mapper;
 		}
 
+		#endregion // Constructor
+
+		#region Public Members
+
 		public ActionResult Index()
 		{
 			if (Request.IsAuthenticated)
 			{
 				var courses = _courses.AllNonDeleted
-					.ToList()
-					.Select(x => _mapper.Map<CourseViewModel>(x))
+					.ProjectTo<CourseViewModel>()
 					.ToList();
 
 				var studentCourses = _studentCourses.AllNonDeleted
 					.Where(x => x.Student.UserName == System.Web.HttpContext.Current.User.Identity.Name)
-					.ToList()
-					.Select(x => _mapper.Map<CourseViewModel>(x.Course))
+					.Select(x => x.Course)
+					.ProjectTo<CourseViewModel>()
 					.ToList();
 
 				var viewModel = new HomeViewModel()
@@ -51,7 +63,7 @@ namespace StudentCourses.Web.Controllers
 			}
 			else
 			{
-				return RedirectToAction("Login", "Account");
+				return RedirectToAction(nameof(AccountController.Login), "Account");
 			}
 		}
 
@@ -121,7 +133,7 @@ namespace StudentCourses.Web.Controllers
 			}
 			_unitOfWork.SaveChanges();
 
-			return RedirectToAction("Index", "Home");
+			return RedirectToAction(nameof(GetRegisteredCourses));
 		}
 
 		public ActionResult RemoveCourse(Guid? id)
@@ -159,7 +171,7 @@ namespace StudentCourses.Web.Controllers
 			_studentCourses.Remove(studentCourseToRemove);
 			_unitOfWork.SaveChanges();
 
-			return RedirectToAction("Index", "Home");
+			return RedirectToAction(nameof(GetRegisteredCourses));
 		}
 
 		[HttpPost]
@@ -176,7 +188,42 @@ namespace StudentCourses.Web.Controllers
 				_unitOfWork.SaveChanges();
 			}
 
-			return RedirectToAction("Index", "Home");
+			return RedirectToAction(nameof(Index));
 		}
+
+		public ActionResult GetAllCourses()
+		{
+			if (Request.IsAjaxRequest())
+			{
+				var courses = _courses.AllNonDeleted
+					.ProjectTo<CourseViewModel>()
+					.ToList();
+				return PartialView("_ListAllCourses", courses);
+			}
+			else
+			{
+				return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+			}
+		}
+
+		public ActionResult GetRegisteredCourses()
+		{
+			if (Request.IsAjaxRequest())
+			{
+				var studentCourses = _studentCourses.AllNonDeleted
+					.Where(stCourse => stCourse.Student.UserName == System.Web.HttpContext.Current.User.Identity.Name)
+					.Select(stCourse => stCourse.Course)
+					.ProjectTo<CourseViewModel>()
+					.ToList();
+					
+				return PartialView("_ListRegisteredCourses", studentCourses);
+			}
+			else
+			{
+				return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+			}
+		}
+
+		#endregion	// Public Members
 	}
 }
