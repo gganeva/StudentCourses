@@ -48,7 +48,7 @@ namespace StudentCourses.Web.Controllers
 					.ToList();
 
 				var studentCourses = _studentCourses.AllNonDeleted
-					.Where(x => x.Student.UserName == System.Web.HttpContext.Current.User.Identity.Name)
+					.Where(x => x.Student.UserName == User.Identity.Name)
 					.Select(x => x.Course)
 					.ProjectTo<CourseViewModel>()
 					.ToList();
@@ -85,20 +85,29 @@ namespace StudentCourses.Web.Controllers
 			return View(viewModel);
 		}
 
-		public ActionResult RegisterCourse(Guid? id)
+		[HttpPost]
+		public ActionResult RegisterToCourse(Guid? id)
 		{
+			if (!Request.IsAuthenticated)
+			{
+				return new HttpStatusCodeResult(HttpStatusCode.BadRequest,
+					"Unauthenticated attempt to register for course is detected!");
+			}
+
 			if (id == null)
 			{
-				return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+				return new HttpStatusCodeResult(HttpStatusCode.BadRequest,
+					"Invalid course id!");
 			}
 
 			var course = _courses.GetById(id.Value);
 
 			if (course == null)
 			{
-				return new HttpNotFoundResult();
+				return new HttpNotFoundResult("The specified course is not found!");
 			}
 
+			// TODO : Check whether this can be done without this call.
 			var student = _students.AllNonDeleted
 				.Where(x => x.UserName == User.Identity.Name)
 				.FirstOrDefault();
@@ -115,7 +124,7 @@ namespace StudentCourses.Web.Controllers
 			if (studentCourse != null && !studentCourse.IsDeleted)
 			{
 				return new HttpStatusCodeResult(HttpStatusCode.Conflict,
-					"Course already registered");
+					String.Format("A registration to course '{0}' already exists!", course.Title));
 			}
 
 			if (studentCourse != null)

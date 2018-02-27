@@ -18,10 +18,11 @@
 					<td>@course.Title</td>
 					<td>@course.Description</td>
 					<td>
-						@Ajax.ActionLink("Register", "RegisterCourse",
+						@Ajax.ActionLink("Register", "RegisterToCourse",
 								 new { id = course.Id },
 								 new AjaxOptions()
 								 {
+									 HttpMethod = "POST",
 									 Confirm = "Are you sure you want to register for \"" + course.Title + "\"?",
 									 OnFailure = "DisplayErrorPopup",
 									 InsertionMode = InsertionMode.Replace,
