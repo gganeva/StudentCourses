@@ -136,36 +136,28 @@ namespace StudentCourses.Web.Controllers
 			return RedirectToAction(nameof(GetRegisteredCourses));
 		}
 
-		public ActionResult RemoveCourse(Guid? id)
+		[HttpPost]
+		public ActionResult UnregisterFromCourse(Guid? id)
 		{
+			if (!Request.IsAuthenticated)
+			{
+				return new HttpStatusCodeResult(HttpStatusCode.BadRequest,
+					"Unauthenticated attempt to unregister from course is detected!");
+			}
+
 			if (id == null)
 			{
-				return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-			}
-
-			var course = _courses.GetById(id.Value);
-
-			if (course == null)
-			{
-				return new HttpNotFoundResult();
-			}
-
-			var student = _students.AllNonDeleted
-				.Where(st => st.UserName == User.Identity.Name)
-				.FirstOrDefault();
-
-			if (student == null)
-			{
-				return new HttpNotFoundResult();
+				return new HttpStatusCodeResult(HttpStatusCode.BadRequest,
+					"Invalid course id!");
 			}
 
 			var studentCourseToRemove = _studentCourses.AllNonDeleted
-				.Where(x => x.Student.UserName == student.UserName && x.Course.Id == id.Value)
+				.Where(x => x.Student.UserName == User.Identity.Name && x.Course.Id == id.Value)
 				.FirstOrDefault();
 
 			if (studentCourseToRemove == null)
 			{
-				return new HttpNotFoundResult();
+				return new HttpNotFoundResult("No registration to the specified course exists!");
 			}
 
 			_studentCourses.Remove(studentCourseToRemove);

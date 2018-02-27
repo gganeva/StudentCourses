@@ -19,10 +19,11 @@
 					<td>@course.Description</td>
 					<td>
 						@Html.ActionLink("Edit", "EditCourse", new { id = course.Id })
-						@Ajax.ActionLink("Unregister", "RemoveCourse",
+						@Ajax.ActionLink("Unregister", "UnregisterFromCourse",
 								 new { id = course.Id },
 								 new AjaxOptions()
 								 {
+									 HttpMethod = "POST",
 									 Confirm = "Are you sure you wish to unregister from course \"" + course.Title + "\"?",
 									 InsertionMode = InsertionMode.Replace,
 									 UpdateTargetId = "registeredCourses"
