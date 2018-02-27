@@ -2,17 +2,16 @@
 @model CourseViewModel
 
 @{
-	ViewBag.Title = "Edit Course";
+	ViewBag.Title = "Add Course";
 }
 
 <h1>@ViewBag.Title</h1>
 
 <section id="editForm">
-	@using (Html.BeginForm("EditCourse", "Home", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+	@using (Html.BeginForm("AddCourse", "Home", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
 	{
 		@Html.AntiForgeryToken()
 		@Html.ValidationSummary(true, "", new { @class = "text-danger" })
-		@Html.HiddenFor(c => c.Id)
 		<div class="form-group">
 			@Html.LabelFor(c => c.Title, new { @class = "col-md-2 control-label" })
 			<div class="col-md-10">
@@ -29,7 +28,7 @@
 		</div>
 		<div class="form-group">
 			<div class="col-md-offset-2 col-md-10">
-				<input type="submit" value="Submit" class="btn btn-default" />
+				<input type="submit" value="Add" class="btn btn-default" />
 			</div>
 		</div>
 	}

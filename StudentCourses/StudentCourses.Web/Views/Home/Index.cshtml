@@ -15,3 +15,6 @@
 		@Html.Partial("_ListAllCourses", Model.AllCourses)
 	</div>
 </div>
+<div class="row">
+	@Html.ActionLink("Add New Course", "AddCourse", null, new { @class= "btn btn-default" })
+</div>

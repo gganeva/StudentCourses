@@ -184,7 +184,7 @@ namespace StudentCourses.Web.Controllers
 
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public ActionResult UpdateCourse(CourseViewModel course)
+		public ActionResult EditCourse(CourseViewModel course)
 		{
 			if (ModelState.IsValid)
 			{
@@ -198,7 +198,32 @@ namespace StudentCourses.Web.Controllers
 				return RedirectToAction(nameof(Index));
 			}
 
-			return View("EditCourse", course);
+			return View(course);
+		}
+
+		public ActionResult AddCourse()
+		{
+			if (!Request.IsAuthenticated)
+			{
+				return new HttpStatusCodeResult(HttpStatusCode.BadRequest,
+					"Unauthenticated attempt to unregister from course is detected!");
+			}
+
+			return View(new CourseViewModel());
+		}
+
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public ActionResult AddCourse(CourseViewModel course)
+		{
+			if (ModelState.IsValid)
+			{
+				_courses.Add(_mapper.Map<Course>(course));
+				_unitOfWork.SaveChanges();
+
+				return RedirectToAction(nameof(Index));
+			}
+			return View(course);
 		}
 
 		public ActionResult GetAllCourses()

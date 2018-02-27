@@ -13,6 +13,7 @@ namespace StudentCourses.Web.App_Start
 			Mapper.Initialize(cfg =>
 			{
 				cfg.CreateMap<Course, CourseViewModel>();
+				cfg.CreateMap<CourseViewModel, Course>();
 			});
 
 			MapperInstance = Mapper.Instance;
