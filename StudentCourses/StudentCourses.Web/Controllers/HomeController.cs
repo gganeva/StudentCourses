@@ -69,16 +69,23 @@ namespace StudentCourses.Web.Controllers
 
 		public ActionResult EditCourse(Guid? id)
 		{
+			if (!Request.IsAuthenticated)
+			{
+				return new HttpStatusCodeResult(HttpStatusCode.BadRequest,
+					"Unauthenticated attempt to edit a course is detected!");
+			}
+
 			if (id == null)
 			{
-				return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+				return new HttpStatusCodeResult(HttpStatusCode.BadRequest,
+					"Invalid course id!");
 			}
 
 			var course = _courses.GetById(id.Value);
 
 			if (course == null)
 			{
-				return new HttpNotFoundResult();
+				return new HttpNotFoundResult("No such course is found!");
 			}
 
 			var viewModel = _mapper.Map<CourseViewModel>(course);
@@ -176,20 +183,22 @@ namespace StudentCourses.Web.Controllers
 		}
 
 		[HttpPost]
+		[ValidateAntiForgeryToken]
 		public ActionResult UpdateCourse(CourseViewModel course)
 		{
 			if (ModelState.IsValid)
 			{
-				var dbCourse = _courses.GetById(course.Id); 
+				var dbCourse = _courses.GetById(course.Id);
 				dbCourse.Title = course.Title;
 				dbCourse.Description = course.Description;
 				dbCourse.ModifiedOn = DateTime.Now;
 
 				_courses.Update(dbCourse);
 				_unitOfWork.SaveChanges();
+				return RedirectToAction(nameof(Index));
 			}
 
-			return RedirectToAction(nameof(Index));
+			return View("EditCourse", course);
 		}
 
 		public ActionResult GetAllCourses()
@@ -212,7 +221,7 @@ namespace StudentCourses.Web.Controllers
 			if (Request.IsAjaxRequest())
 			{
 				var studentCourses = _studentCourses.AllNonDeleted
-					.Where(stCourse => stCourse.Student.UserName == System.Web.HttpContext.Current.User.Identity.Name)
+					.Where(stCourse => stCourse.Student.UserName == User.Identity.Name)
 					.Select(stCourse => stCourse.Course)
 					.ProjectTo<CourseViewModel>()
 					.ToList();
