@@ -226,6 +226,40 @@ namespace StudentCourses.Web.Controllers
 			return View(course);
 		}
 
+		[HttpPost]
+		public ActionResult DeleteCourse(Guid? id)
+		{
+			if (!Request.IsAuthenticated)
+			{
+				return new HttpStatusCodeResult(HttpStatusCode.BadRequest,
+					"Unauthenticated attempt to delete a course is detected!");
+			}
+
+			if (id == null)
+			{
+				return new HttpStatusCodeResult(HttpStatusCode.BadRequest,
+					"Invalid course id!");
+			}
+
+			// TODO :
+			Course course =_courses.GetById(id.Value);
+
+			var studentCourses = _studentCourses.AllNonDeleted
+				.Where(stCourse => stCourse.CourseId == id.Value)
+				.ToList();
+
+			foreach (StudentCourse stCourse in studentCourses)
+			{
+				_studentCourses.Remove(stCourse);
+			}
+
+			_courses.Remove(course);
+
+			_unitOfWork.SaveChanges();
+
+			return RedirectToAction("Index");
+		}
+
 		public ActionResult GetAllCourses()
 		{
 			if (Request.IsAjaxRequest())

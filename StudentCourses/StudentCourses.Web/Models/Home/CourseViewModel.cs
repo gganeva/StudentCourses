@@ -6,6 +6,11 @@ namespace StudentCourses.Web.Models.Home
 {
 	public class CourseViewModel
 	{
+		public CourseViewModel()
+		{
+			Id = Guid.NewGuid();
+		}
+
 		[HiddenInput(DisplayValue = false)]
 		public Guid Id { get; set; }
 
