@@ -2,8 +2,8 @@
 
 namespace StudentCourses.Services.Contracts
 {
-	public interface IUserServices
+	public interface IStudentServices
 	{
-		Student GetUser(string userName);
+		Student GetStudent(string userName);
 	}
 }

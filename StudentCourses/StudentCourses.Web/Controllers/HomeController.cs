@@ -8,6 +8,7 @@ using AutoMapper.QueryableExtensions;
 
 using StudentCourses.Data;
 using StudentCourses.Models;
+using StudentCourses.Services.Contracts;
 using StudentCourses.Web.Models.Home;
 
 namespace StudentCourses.Web.Controllers
@@ -16,9 +17,9 @@ namespace StudentCourses.Web.Controllers
 	{
 		#region Fields
 
-		private readonly IGenericRepository<StudentCourse> _studentCourses;
-		private readonly IGenericRepository<Course> _courses;
-		private readonly IGenericRepository<Student> _students;
+		private readonly IStudentCoursesServices _studentCourses;
+		private readonly IStudentServices _students;
+		private readonly ICoursesServices _courses;
 		private readonly IUnitOfWork _unitOfWork;
 		private readonly IMapper _mapper;
 
@@ -26,12 +27,16 @@ namespace StudentCourses.Web.Controllers
 
 		#region Constructor
 
-		public HomeController(IUnitOfWork unitOfWork, IMapper mapper)
+		public HomeController(IUnitOfWork unitOfWork,
+			ICoursesServices coursesServices,
+			IStudentServices studentsServices,
+			IStudentCoursesServices studentCoursesServices,
+			IMapper mapper)
 		{
 			_unitOfWork = unitOfWork;
-			_studentCourses = _unitOfWork.Repository<StudentCourse>();
-			_courses = _unitOfWork.Repository<Course>();
-			_students = _unitOfWork.Repository<Student>();
+			_studentCourses = studentCoursesServices;
+			_courses = coursesServices;
+			_students = studentsServices;
 			_mapper = mapper;
 		}
 
@@ -44,14 +49,10 @@ namespace StudentCourses.Web.Controllers
 			if (Request.IsAuthenticated)
 			{
 				var courses = _courses.AllNonDeleted
-					.ProjectTo<CourseViewModel>()
-					.ToList();
+					.Select(c => _mapper.Map<CourseViewModel>(c));
 
-				var studentCourses = _studentCourses.AllNonDeleted
-					.Where(x => x.Student.UserName == User.Identity.Name)
-					.Select(x => x.Course)
-					.ProjectTo<CourseViewModel>()
-					.ToList();
+				var studentCourses = _studentCourses.AllNonDeleted(x => x.Student.UserName == User.Identity.Name)
+					.Select(x => _mapper.Map<CourseViewModel>(x.Course));
 
 				var viewModel = new HomeViewModel()
 				{
@@ -81,7 +82,7 @@ namespace StudentCourses.Web.Controllers
 					"Invalid course id!");
 			}
 
-			var course = _courses.GetById(id.Value);
+			var course = _courses.GetCourse(id.Value);
 
 			if (course == null)
 			{
@@ -107,7 +108,7 @@ namespace StudentCourses.Web.Controllers
 					"Invalid course id!");
 			}
 
-			var course = _courses.GetById(id.Value);
+			var course = _courses.GetCourse(id.Value);
 
 			if (course == null)
 			{
@@ -115,38 +116,27 @@ namespace StudentCourses.Web.Controllers
 			}
 
 			// TODO : Check whether this can be done without this call.
-			var student = _students.AllNonDeleted
-				.Where(x => x.UserName == User.Identity.Name)
-				.FirstOrDefault();
+			var student = _students.GetStudent(User.Identity.Name);
 
 			if (student == null)
 			{
 				return new HttpNotFoundResult();
 			}
 
-			var studentCourse = _studentCourses.AllAndDeleted
-				.Where(x => x.Student.UserName == student.UserName && x.CourseId == id.Value)
+			var studentCourse = _studentCourses.AllNonDeleted(x => x.Student.UserName == student.UserName && x.CourseId == id.Value)
 				.FirstOrDefault();
 
-			if (studentCourse != null && !studentCourse.IsDeleted)
+			if (studentCourse != null)
 			{
 				return new HttpStatusCodeResult(HttpStatusCode.Conflict,
 					String.Format("A registration to course '{0}' already exists!", course.Title));
 			}
 
-			if (studentCourse != null)
+			_studentCourses.Add(new StudentCourse()
 			{
-				studentCourse.IsDeleted = false;
-				_studentCourses.Update(studentCourse);
-			}
-			else
-			{
-				_studentCourses.Add(new StudentCourse()
-				{
-					Course = course,
-					Student = student
-				});
-			}
+				Course = course,
+				Student = student
+			});
 			_unitOfWork.SaveChanges();
 
 			return RedirectToAction(nameof(GetRegisteredCourses));
@@ -167,8 +157,7 @@ namespace StudentCourses.Web.Controllers
 					"Invalid course id!");
 			}
 
-			var studentCourseToRemove = _studentCourses.AllNonDeleted
-				.Where(x => x.Student.UserName == User.Identity.Name && x.Course.Id == id.Value)
+			var studentCourseToRemove = _studentCourses.AllNonDeleted(x => x.Student.UserName == User.Identity.Name && x.Course.Id == id.Value)
 				.FirstOrDefault();
 
 			if (studentCourseToRemove == null)
@@ -188,13 +177,14 @@ namespace StudentCourses.Web.Controllers
 		{
 			if (ModelState.IsValid)
 			{
-				var dbCourse = _courses.GetById(course.Id);
+				var dbCourse = _courses.GetCourse(course.Id);
 				dbCourse.Title = course.Title;
 				dbCourse.Description = course.Description;
 				dbCourse.ModifiedOn = DateTime.Now;
 
 				_courses.Update(dbCourse);
 				_unitOfWork.SaveChanges();
+
 				return RedirectToAction(nameof(Index));
 			}
 
@@ -242,12 +232,9 @@ namespace StudentCourses.Web.Controllers
 			}
 
 			// TODO :
-			Course course =_courses.GetById(id.Value);
+			Course course =_courses.GetCourse(id.Value);
 
-			var studentCourses = _studentCourses.AllNonDeleted
-				.Where(stCourse => stCourse.CourseId == id.Value)
-				.ToList();
-
+			var studentCourses = _studentCourses.AllNonDeleted(stCourse => stCourse.CourseId == id.Value);
 			foreach (StudentCourse stCourse in studentCourses)
 			{
 				_studentCourses.Remove(stCourse);
@@ -265,8 +252,7 @@ namespace StudentCourses.Web.Controllers
 			if (Request.IsAjaxRequest())
 			{
 				var courses = _courses.AllNonDeleted
-					.ProjectTo<CourseViewModel>()
-					.ToList();
+					.Select(c => _mapper.Map<CourseViewModel>(c));
 				return PartialView("_ListAllCourses", courses);
 			}
 			else
@@ -279,11 +265,8 @@ namespace StudentCourses.Web.Controllers
 		{
 			if (Request.IsAjaxRequest())
 			{
-				var studentCourses = _studentCourses.AllNonDeleted
-					.Where(stCourse => stCourse.Student.UserName == User.Identity.Name)
-					.Select(stCourse => stCourse.Course)
-					.ProjectTo<CourseViewModel>()
-					.ToList();
+				var studentCourses = _studentCourses.AllNonDeleted(stCourse => stCourse.Student.UserName == User.Identity.Name)
+					.Select(stCourse => _mapper.Map<CourseViewModel>(stCourse.Course));
 					
 				return PartialView("_ListRegisteredCourses", studentCourses);
 			}

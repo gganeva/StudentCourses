@@ -6,16 +6,16 @@ using StudentCourses.Services.Contracts;
 
 namespace StudentCourses.Services
 {
-	public class UserServices : IUserServices
+	public class StudentServices : IStudentServices
 	{
 		private readonly IGenericRepository<Student> _dbContextWrapper;
 
-		public UserServices(IGenericRepository<Student> dbContextWrapper)
+		public StudentServices(IUnitOfWork unitOfWork)
 		{
-			_dbContextWrapper = dbContextWrapper;
+			_dbContextWrapper = unitOfWork.Repository<Student>();
 		}
 
-		public Student GetUser(string userName)
+		public Student GetStudent(string userName)
 		{
 			return _dbContextWrapper.AllNonDeleted.Where(x => x.UserName == userName).FirstOrDefault();
 		}

@@ -51,12 +51,22 @@ namespace StudentCourses.Data
 				throw new ArgumentNullException(nameof(entity));
 			}
 
-			if (entity is IAuditable)
+			DbEntityEntry entry = _context.Entry(entity);
+			if (entry.State == EntityState.Detached)
 			{
-				((IAuditable)entity).CreatedOn = DateTime.Now;
+				IAuditable auditable = entity as IAuditable;
+				if (entity is IAuditable)
+				{
+					((IAuditable)entity).CreatedOn = DateTime.Now;
+				}
+				Entities.Add(entity);
 			}
-
-			Entities.Add(entity);
+			else
+			{
+				entity.IsDeleted = false;
+				entity.DeletedOn = null;
+				entry.State = EntityState.Modified;
+			}
 		}
 
 		public void Remove(T entity)
@@ -68,6 +78,8 @@ namespace StudentCourses.Data
 
 			entity.IsDeleted = true;
 			entity.DeletedOn = DateTime.Now;
+
+			Update(entity);
 		}
 
 		public void Update(T entity)
@@ -81,6 +93,14 @@ namespace StudentCourses.Data
 			{
 				((IAuditable)entity).ModifiedOn = DateTime.Now;
 			}
+
+			DbEntityEntry entry = _context.Entry(entity);
+			if (entry.State == EntityState.Detached)
+			{
+				Entities.Attach(entity);
+			}
+
+			entry.State = EntityState.Modified;
 		}
 
 		public T GetById(Guid id)

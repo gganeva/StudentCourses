@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 using StudentCourses.Data;
@@ -11,14 +12,25 @@ namespace StudentCourses.Services
 	{
 		private readonly IGenericRepository<Course> _dbContextWrapper;
 
-		public CoursesServices(IGenericRepository<Course> dbContextWrapper)
+		public CoursesServices(IUnitOfWork unitOfWork)
 		{
-			_dbContextWrapper = dbContextWrapper;
+			_dbContextWrapper = unitOfWork.Repository<Course>();
 		}
 
-		public IQueryable<Course> GetAll()
+		public IEnumerable<Course> AllNonDeleted
 		{
-			return _dbContextWrapper.AllNonDeleted;
+			get
+			{
+				return _dbContextWrapper.AllNonDeleted.ToList();
+			}
+		}
+
+		public IEnumerable<Course> AllPlusDeleted
+		{
+			get
+			{
+				return _dbContextWrapper.AllAndDeleted.ToList();
+			}
 		}
 
 		public Course GetCourse(Guid id)
@@ -29,6 +41,30 @@ namespace StudentCourses.Services
 		public void Update(Course course)
 		{
 			_dbContextWrapper.Update(course);
+		}
+
+		public Guid Add(Course course)
+		{
+			Course deletedCourse = _dbContextWrapper.AllAndDeleted
+				.Where(c => c.Title == course.Title && c.Description == course.Description)
+				.FirstOrDefault();
+
+			if (deletedCourse == null)
+			{
+				course.Id = Guid.NewGuid();
+				_dbContextWrapper.Add(course);
+				return course.Id;
+			}
+			else
+			{
+				_dbContextWrapper.Add(deletedCourse);
+				return deletedCourse.Id;
+			}
+		}
+
+		public void Remove(Course course)
+		{
+			_dbContextWrapper.Remove(course);
 		}
 	}
 }

@@ -75,8 +75,7 @@ namespace StudentCourses.Web.App_Start
 			});
 
 			kernel.Bind(typeof(DbContext)).To(typeof(StudentCoursesDbContext)).InRequestScope();
-			//kernel.Bind(typeof(IGenericRepository<>)).To(typeof(GenericRepository<>));
-			kernel.Bind<IUnitOfWork>().To<UnitOfWork>();
+			kernel.Bind<IUnitOfWork>().To<UnitOfWork>().InSingletonScope();
 			kernel.Bind<IMapper>().ToMethod(ctx => AutoMapperConfig.MapperInstance);
         }        
     }
